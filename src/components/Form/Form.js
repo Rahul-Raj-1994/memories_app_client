@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Typography, Paper } from "@material-ui/core";
-import FileBase from "react-file-base64";
+import React from "react";
 
 import useStyles from "./styles";
-import { useSelector, useDispatch } from "react-redux";
-import { createPost, updatePost } from "../../actions/posts";
 
-// GET THE CURRENT ID
+import { TextField, Button, Typography, Paper } from "@material-ui/core";
+import FileBase from "react-file-base64";
+import { useDispatch } from "react-redux";
+// import { createPost } from "../../redux/action/postAction";
+import { createPost } from "../../actions/posts";
 
-const Form = ({ currentId, setCurrentId }) => {
-  const [postData, setPostData] = useState({
+const Form = () => {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const [postData, setPostData] = React.useState({
     creator: "",
     title: "",
     message: "",
@@ -17,31 +19,10 @@ const Form = ({ currentId, setCurrentId }) => {
     selectedFile: "",
   });
 
-  const post = useSelector((state) =>
-    currentId ? state.posts.find((p) => p._id === currentId) : null
-  );
-
-  const classes = useStyles();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (post) setPostData(post);
-  }, [post]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (currentId) {
-      dispatch(updatePost(currentId, postData));
-    }
-
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Here is the PostData from HandleSubmit function", postData);
     dispatch(createPost(postData));
-
-    clear();
-  };
-
-  const clear = () => {
-    setCurrentId(null);
     setPostData({
       creator: "",
       title: "",
@@ -50,16 +31,20 @@ const Form = ({ currentId, setCurrentId }) => {
       selectedFile: "",
     });
   };
+  console.log("Here is the Post data", postData);
 
+  const handleClear = () => {
+    console.log("Form Cleared");
+  };
   return (
     <Paper className={classes.paper}>
       <form
-        autoComplete="off"
-        noValidate
         className={`${classes.root} ${classes.form}`}
-        onClick={handleSubmit}
+        autoComplete="off"
+        variant="outlined"
+        onSubmit={handleSubmit}
       >
-        <Typography variant="h6">Creating a Memory</Typography>
+        <Typography variant="h6"> Create a Memory</Typography>
         <TextField
           name="creator"
           variant="outlined"
@@ -83,8 +68,6 @@ const Form = ({ currentId, setCurrentId }) => {
           variant="outlined"
           label="Message"
           fullWidth
-          multiline
-          minRows={4}
           value={postData.message}
           onChange={(e) =>
             setPostData({ ...postData, message: e.target.value })
@@ -93,38 +76,39 @@ const Form = ({ currentId, setCurrentId }) => {
         <TextField
           name="tags"
           variant="outlined"
-          label="Tags (coma separated)"
+          label="Tags"
           fullWidth
           value={postData.tags}
-          onChange={(e) =>
-            setPostData({ ...postData, tags: e.target.value.split(",") })
-          }
+          onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
         />
+
         <div className={classes.fileInput}>
           <FileBase
             type="file"
-            multiple={false}
-            onDone={({ base64 }) =>
+            multiple="false"
+            onDone={([{ base64 }]) =>
               setPostData({ ...postData, selectedFile: base64 })
             }
           />
         </div>
         <Button
           className={classes.buttonSubmit}
-          variant="contained"
-          color="primary"
-          size="large"
           type="submit"
+          variant="contained"
+          size="lg"
           fullWidth
+          color="primary"
         >
-          Submit
+          Submit Post
         </Button>
+
         <Button
           variant="contained"
-          color="secondary"
+          style={{ marginTop: "10px" }}
           size="small"
           fullWidth
-          onClick={clear}
+          color="secondary"
+          onClick={handleClear}
         >
           Clear
         </Button>

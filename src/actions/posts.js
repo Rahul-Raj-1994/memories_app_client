@@ -30,3 +30,21 @@ export const updatePost = (id, post) => async (dispatch) => {
     console.log("error in line 29", error);
   }
 };
+
+export const deletePost = (id) => async (dispatch) => {
+  try {
+    await api.deletePost(id);
+    dispatch({ type: "DELETE", payload: id });
+  } catch (error) {
+    console.log("error in line 39", error);
+  }
+};
+
+export const likePost = (id) => async (dispatch) => {
+  try {
+    const { data } = await api.likePost(id);
+    dispatch({ type: "LIKE", payload: data });
+  } catch (error) {
+    console.log("errorin line 48", error);
+  }
+};
